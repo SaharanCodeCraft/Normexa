@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Normexa | AI Anomaly Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- THEME: DARKISH BLACKISH / GREY SHADE MODE --- */
+        :root {
+            --bg-body: #050505;
+            --bg-layer: #0a0a0a;
+            --bg-card: #0f0f0f;
+            --bg-input: #141414;
+            
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.6);
+            
+            --danger: #ef4444;
+            --success: #10b981;
+            
+            --text-main: #f1f5f9;
+            --text-muted: #64748b;
+            --border-dim: #27272a;
+            
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+        }
+
+        /* --- HEADER --- */
+        header.hero {
+            background-color: var(--bg-layer);
+            padding: 70px 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border-dim);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header.hero::after {
+            content: '';
+            position: absolute;
+            top: -50px; left: 50%; transform: translateX(-50%);
+            width: 600px; height: 300px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .brand-wrapper {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 10px;
+        }
+
+        /* --- LOGO STYLES (SIZE INCREASED) --- */
+        .normexa-logo {
+            width: 70px;
+            height: 70px;
+            color: var(--primary);
+            filter: drop-shadow(0 0 8px var(--primary-glow));
+            transition: transform 0.4s ease;
+        }
+        
+        .brand-wrapper:hover .normexa-logo {
+            transform: scale(1.1);
+        }
+
+        @keyframes rotate-scanner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse-core {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            line-height: 1;
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 50%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.3));
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 1;
+            font-weight: 300;
+            margin-top: 15px;
+        }
+
+        /* --- CARDS --- */
+        .cards-section { padding: 40px 0; }
+        .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+        .info-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: var(--radius);
+            padding: 32px;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+            transform: translateY(-4px);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .card-icon { font-size: 1.4rem; opacity: 0.9; }
+        .card-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; }
+
+        /* --- INTERACTION --- */
+        .interaction-section { padding: 20px 0 60px; flex-grow: 1; }
+
+        .split-interface {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 2px;
+            background-color: var(--border-dim);
+            border: 1px solid var(--border-dim);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .panel { background-color: var(--bg-body); padding: 30px; display: flex; flex-direction: column; }
+
+        /* --- LEFT PANEL (INPUT) --- */
+        .input-panel { gap: 24px; }
+
+        .upload-zone {
+            border: 2px dashed #3f3f46;
+            border-radius: var(--radius);
+            background-color: var(--bg-input);
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--primary);
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        .upload-content { text-align: center; pointer-events: none; z-index: 2; }
+        .upload-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+        .upload-text { color: var(--text-muted); font-size: 0.9rem; }
+
+        #imagePreview {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: contain; background: #000; z-index: 1; display: none;
+        }
+
+        .control-group label {
+            display: block; color: var(--text-muted); font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 600;
+        }
+
+        select {
+            width: 100%; padding: 12px; background-color: var(--bg-input);
+            border: 1px solid var(--border-dim); color: var(--text-main);
+            border-radius: 8px; outline: none; transition: var(--transition); cursor: pointer;
+        }
+
+        select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+
+        .btn-detect {
+            width: 100%; padding: 14px; background: var(--primary); color: #fff;
+            border: none; border-radius: 8px; font-weight: 700; font-size: 1rem;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            transition: var(--transition); display: flex; justify-content: center;
+            align-items: center; gap: 8px;
+        }
+
+        .btn-detect:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5); }
+        .btn-detect:disabled { background: #1f2937; color: #4b5563; cursor: not-allowed; box-shadow: none; }
+
+        /* --- RIGHT PANEL (OUTPUT) --- */
+        .output-panel { justify-content: center; align-items: center; position: relative; min-height: 400px; }
+
+        .empty-state { text-align: center; color: #3f3f46; }
+        .empty-icon { font-size: 3rem; margin-bottom: 10px; display: block; opacity: 0.5; }
+
+        .results-wrapper {
+            width: 100%; height: 100%; display: none; flex-direction: column;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        .result-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border-dim);
+        }
+
+        .badge {
+            padding: 6px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .badge.normal { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge.suspicious { background: rgba(245, 158, 11, 0.15);color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);}
+        .badge.defect { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+
+        .score-display { text-align: right; }
+        .score-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .score-num { font-size: 1.2rem; font-weight: 700; color: var(--text-main); font-family: monospace; }
+
+        .progress-track {
+            width: 100%; height: 6px; background: #1f2937; border-radius: 3px;
+            overflow: hidden; margin-bottom: 20px;
+        }
+        .progress-fill {
+            height: 100%; width: 0%; background: var(--primary);
+            transition: width 1s ease-out; box-shadow: 0 0 10px var(--primary);
+        }
+
+        .image-display-area {
+            flex-grow: 1; background: #000; border-radius: 8px; overflow: hidden;
+            border: 1px solid var(--border-dim); display: flex; justify-content: center; align-items: center;
+        }
+
+        .result-img { max-width: 100%; max-height: 350px; object-fit: contain; }
+
+        /* --- FOOTER --- */
+        footer {
+            border-top: 1px solid var(--border-dim); padding: 20px 0;
+            background-color: var(--bg-layer); text-align: center;
+        }
+        .tech-stack { font-size: 0.85rem; color: var(--text-muted); letter-spacing: 0.5px; }
+        .tech-stack span { color: #52525b; margin: 0 8px; }
+
+        /* --- UTILS --- */
+        .spinner {
+            width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff; border-radius: 50%;
+            animation: spin 0.8s linear infinite; display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 900px) {
+            .cards-grid, .split-interface { grid-template-columns: 1fr; }
+            .input-panel { border-right: none; border-bottom: 1px solid var(--border-dim); }
+            .hero h1 { font-size: 2.8rem; }
+            .normexa-logo { width: 50px; height: 50px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <div class="container">
+            <div class="brand-wrapper">
+                <svg class="normexa-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="coreGlow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="2" stroke-dasharray="10 5" stroke-opacity="0.6" style="transform-origin: 50px 50px; animation: rotate-scanner 4s linear infinite;" />
+                    <path d="M50 15 L80 32.5 V67.5 L50 85 L20 67.5 V32.5 L50 15Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round" fill="rgba(59, 130, 246, 0.1)" style="filter: url(#coreGlow);" />
+                    <rect x="44" y="44" width="12" height="12" fill="currentColor" rx="2" style="animation: pulse-core 2s ease-in-out infinite;" />
+                </svg>
+                <h1 class="brand-name">NORMEXA</h1>
+            </div>
+            <p>Detect unseen defects using AI</p>
+        </div>
+    </header>
+
+    <section class="cards-section">
+        <div class="container">
+            <div class="cards-grid">
+                <div class="info-card">
+                    <div class="card-title">
+                        <span class="card-icon">⚠️</span> Real-World Challenge
+                    </div>
+                    <p class="card-desc">In real-world industries, defects are rare, unpredictable, and constantly changing. Traditional AI systems require labeled defect data — which is expensive, incomplete, and often unavailable. As a result, critical defects can go unnoticed, leading to quality issues, safety risks, and financial loss.</p>
+                </div>
+                <div class="info-card">
+                    <div class="card-title">
+                        <span class="card-icon">🧠</span> Our Approach
+                    </div>
+                    <p class="card-desc">This system learns only from normal images and builds an understanding of what “good” looks like. Instead of memorizing defects, it detects anomalies by identifying deviations from normal patterns. It highlights suspicious regions and assigns an anomaly score — enabling early detection without requiring labeled defect data.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="interaction-section">
+        <div class="container">
+            <div class="split-interface">
+                <div class="panel input-panel">
+                    <div class="upload-zone" id="dropZone">
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                        <div class="upload-content">
+                            <span class="upload-icon">📤</span>
+                            <span class="upload-text">Drag & Drop or Click to Upload</span>
+                        </div>
+                        <img id="imagePreview" src="" alt="Preview">
+                    </div>
+
+                    <div class="control-group">
+                        <label>Category</label>
+                        <select id="categorySelect">
+                            <option value="bottle">Bottle</option>
+                            <option value="cable">Cable</option>
+                            <option value="capsule">Capsule</option>
+                            <option value="carpet">Carpet</option>
+                            <option value="grid">Grid</option>
+                            <option value="hazelnut">Hazelnut</option>
+                            <option value="leather">Leather</option>
+                            <option value="metal_nut">Metal Nut</option>
+                            <option value="pill">Pill</option>
+                            <option value="screw">Screw</option>
+                            <option value="tile">Tile</option>
+                            <option value="toothbrush">Toothbrush</option>
+                            <option value="transistor">Transistor</option>
+                            <option value="wood">Wood</option>
+                            <option value="zipper">Zipper</option>
+                        </select>
+                    </div>
+
+                    <button id="detectBtn" class="btn-detect" disabled>
+                        <span class="btn-text">🚀 Detect Anomaly</span>
+                        <div class="spinner"></div>
+                    </button>
+                </div>
+
+                <div class="panel output-panel">
+                    <div id="emptyState" class="empty-state">
+                        <span class="empty-icon">🔍</span>
+                        <p>No results yet</p>
+                    </div>
+
+                    <div id="resultsWrapper" class="results-wrapper">
+                        <div class="result-header">
+                            <div id="badgeContainer" class="badge normal">Normal</div>
+                            <div class="score-display">
+                                <div class="score-label">Anomaly Score</div>
+                                <div id="scoreVal" class="score-num">0.0000</div>
+                            </div>
+                        </div>
+
+                        <div class="progress-track">
+                            <div id="progressBar" class="progress-fill"></div>
+                        </div>
+
+                        <div class="image-display-area">
+                            <img id="resultImg" class="result-img" src="" alt="Result">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p class="tech-stack">
+                Built with PatchCore <span>•</span> ResNet50 <span>•</span> FastAPI <span>•</span> React
+            </p>
+        </div>
+    </footer>
+
+    <canvas id="processCanvas" style="display: none;"></canvas>
+
+    <script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const imagePreview = document.getElementById('imagePreview');
+const detectBtn = document.getElementById('detectBtn');
+const emptyState = document.getElementById('emptyState');
+const resultsWrapper = document.getElementById('resultsWrapper');
+const badgeContainer = document.getElementById('badgeContainer');
+const scoreVal = document.getElementById('scoreVal');
+const progressBar = document.getElementById('progressBar');
+const resultImg = document.getElementById('resultImg');
+
+let currentFile = null;
+
+// --- EVENTS ---
+dropZone.addEventListener('click', () => fileInput.click());
+
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+        handleFile(e.dataTransfer.files[0]);
+    }
+});
+
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) {
+        handleFile(e.target.files[0]);
+    }
+});
+
+detectBtn.addEventListener('click', runDetection);
+
+// --- FILE HANDLER ---
+function handleFile(file) {
+    if (!file.type.startsWith('image/')) {
+        alert("Please upload an image");
+        return;
+    }
+
+    currentFile = file;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        imagePreview.src = e.target.result;
+        imagePreview.style.display = 'block';
+        document.querySelector('.upload-content').style.opacity = '0';
+
+        detectBtn.disabled = false;
+        resultsWrapper.style.display = 'none';
+        emptyState.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+}
+
+// --- MAIN DETECTION ---
+async function runDetection() {
+    if (!currentFile) return;
+
+    detectBtn.disabled = true;
+    const btnText = detectBtn.querySelector('.btn-text');
+    const spinner = detectBtn.querySelector('.spinner');
+
+    btnText.textContent = "Analyzing...";
+    spinner.style.display = "block";
+
+    const formData = new FormData();
+    formData.append("file", currentFile);
+    formData.append("category", document.getElementById("categorySelect").value);
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/predict", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) throw new Error("Backend not responding");
+
+        const data = await response.json();
+
+        if (data.error) {
+            alert("Error: " + data.error);
+            return;
+        }
+
+        const score = data.score;
+        const prediction = data.prediction;
+
+        // --- NORMALIZATION (FIXED SCALE) ---
+        const MIN_SCORE = 0.0;
+        const MAX_SCORE = 1.0;
+        
+        const normalizedScore = Math.min(
+            Math.max((score - MIN_SCORE) / (MAX_SCORE - MIN_SCORE), 0),
+            1
+        );
+
+        scoreVal.textContent = (normalizedScore * 100).toFixed(1) + "%";
+        progressBar.style.width = (normalizedScore * 100) + "%";
+
+        // --- BADGE LOGIC ---
+        if (prediction === "Defect") {
+            badgeContainer.textContent = "DEFECT";
+            badgeContainer.className = "badge defect";
+
+            progressBar.style.background = "var(--danger)";
+        } 
+        else if (prediction === "Suspicious") {
+            badgeContainer.textContent = "SUSPICIOUS";
+            badgeContainer.className = "badge suspicious";
+
+            progressBar.style.background = "#f59e0b";
+        } 
+        else {
+            badgeContainer.textContent = "NORMAL";
+            badgeContainer.className = "badge normal";
+
+            progressBar.style.background = "var(--success)";
+        }
+
+        // --- IMAGE ---
+        resultImg.src = `data:image/png;base64,${data.image}`;
+
+        emptyState.style.display = "none";
+        resultsWrapper.style.display = "flex";
+
+    } catch (err) {
+        console.error(err);
+        alert("⚠️ Backend connection failed. Is server running?");
+    } finally {
+        btnText.textContent = "🚀 Detect Anomaly";
+        spinner.style.display = "none";
+        detectBtn.disabled = false;
+    }
+}
+</script>
